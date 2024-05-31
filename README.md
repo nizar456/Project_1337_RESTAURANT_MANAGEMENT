@@ -147,7 +147,7 @@ Ample Bootstrap Dashboard Template
 <table>
 <thead>
 <tr>
-<th>React Js</th>
+<th>Bootstrap</th>
 <th>Angular</th>
 <th>Next Js</th>
 </tr>
@@ -155,8 +155,8 @@ Ample Bootstrap Dashboard Template
 <tbody>
 <tr>
 <td>
-  <a href="https://www.wrappixel.com/templates/ample-react-dashboard/" width="150px">
-    <img src="https://www.wrappixel.com/wp-content/uploads/edd/2020/09/ample-react-admin-template-y.png" alt="" style="max-width:150px;">
+  <a href="https://www.wrappixel.com/templates/ampleadmin/" width="150px">
+    <img src="https://www.wrappixel.com/wp-content/uploads/edd/2024/05/ample-boostrap-admin-wpn.jpg" alt="" style="max-width:150px;">
   </a>
 </td>
 <td>
