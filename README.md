@@ -3,7 +3,7 @@ Ample Bootstrap Dashboard Template
 
 <!-- Main image of Template -->
 <a target="_blank" href="https://www.wrappixel.com/templates/ample-admin-lite/">
-  <img src="https://www.wrappixel.com/wp-content/uploads/edd/2020/04/ample-admin-bootstrap-lite-y.jpg" />
+  <img src="https://www.wrappixel.com/wp-content/uploads/edd/2024/05/ample-free-bootstrap-5-admin-wpn.jpg" />
 </a>
 
 
@@ -135,7 +135,7 @@ Ample Bootstrap Dashboard Template
 # Upgrade to Premium version
 
 <a target="_blank" href="https://www.wrappixel.com/templates/ampleadmin/?ref=33">
-  <img src="https://www.wrappixel.com/wp-content/uploads/edd/2020/04/ample-admin-bootstrap-y.jpg" alt="">
+  <img src="https://www.wrappixel.com/wp-content/uploads/edd/2024/05/ample-boostrap-admin-wpn.jpg" alt="">
 </a>
 <p>
   Checkout our premium version of AmpleAdmin Bootstrap Dashboard Template for lots more features and ready to use page templates.<br>
