@@ -1,5 +1,18 @@
+<?php
+session_start();
+if (!isset($_SESSION['loggedin'])) {
+    header("Location: logout.php");
+    exit();
+}
+
+// Prevent caching
+header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
+header("Pragma: no-cache"); // HTTP 1.0
+header("Expires: 0"); // Proxies
+?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
+
 
 <head>
   <meta charset="utf-8" />
@@ -91,7 +104,7 @@
             <!-- ============================================================== -->
             <li>
               <span
-                  class="text-white font-medium">Bonjour Steave   </span>
+                  class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?>   </span>
             </li>
             <!-- ============================================================== -->
             <!-- User profile and search -->
@@ -114,32 +127,32 @@
           <ul id="sidebarnav">
             <!-- User Profile-->
             <li class="sidebar-item pt-2">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
                 <i class="far fa-clock" aria-hidden="true"></i>
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="TodayMenu.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="TodayMenu.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
                 <span class="hide-menu">Today Menu</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.html"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.php"
                 aria-expanded="false">
                 <i class="fa fa-table" aria-hidden="true"></i>
                 <span class="hide-menu">Commands</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
                 <span class="hide-menu">Blank Page</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logout.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logoutss.php" aria-expanded="false">
                 <i class="fas fa-arrow-alt-circle-right" aria-hidden="true"></i>
                 <span class="hide-menu">Logout</span>
               </a>

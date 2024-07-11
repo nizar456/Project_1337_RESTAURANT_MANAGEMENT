@@ -46,32 +46,34 @@
                     <img src="plugins/images/logo-text.png" alt="homepage" />
                   </span>
                 </a>
-                <p class="text-center text-muted font-14">Your Social Campaigns</p>
-                <form>
+                <p class="text-center text-muted font-14">Your Fancy Restaurant</p>
+                <form method="POST" action="login.php">
                   <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Username</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="name" aria-describedby="emailHelp" required>
                   </div>
                   <div class="mb-4">
                     <label for="exampleInputPassword1" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1">
+                    <input type="password" class="form-control" id="exampleInputPassword1" name="password" required>
                   </div>
                   <div class="d-flex align-items-center justify-content-between mb-4">
                     <div class="form-check mb-0">
                       <input class="form-check-input danger" type="checkbox" value="" id="flexCheckChecked">
                       <label class="form-check-label text-dark mb-0" for="flexCheckChecked">
-                        Remeber this Device
+                        Remember this Device
                       </label>
                     </div>
-                    <a class="text-danger fw-bolder font-14" href="./index.html">Forgot Password ?</a>
+                    <a class="text-danger fw-bolder font-14" href="./index.php">Forgot Password ?</a>
                   </div>
-                  <a href="./index.html" class="btn btn-danger w-100 py-8 mb-4 rounded-2 font-14">Sign In</a>
-                  <div class="d-flex align-items-center justify-content-center">
-                    <p class="mb-0 fw-bolder">New to Ample?</p>
-                    <a class="text-danger fw-bolder ms-2 font-14" href="./authentication-register.html">Create an
-                      account</a>
-                  </div>
+                  <button type="submit" class="btn btn-danger w-100 py-8 mb-4 rounded-2 font-14">Sign In</button>
                 </form>
+                <?php
+                session_start();
+                if (isset($_SESSION['error'])) {
+                    echo "<div class='alert alert-danger'>{$_SESSION['error']}</div>";
+                    unset($_SESSION['error']);
+                }
+                ?>
               </div>
             </div>
           </div>

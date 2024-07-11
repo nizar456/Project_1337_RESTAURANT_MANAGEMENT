@@ -1,4 +1,17 @@
+<?php
+session_start();
+if (!isset($_SESSION['loggedin'])) {
+    header("Location: logout.php");
+    exit();
+}
+
+// Prevent caching
+header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
+header("Pragma: no-cache"); // HTTP 1.0
+header("Expires: 0"); // Proxies
+?>
 <!DOCTYPE html>
+
 <html dir="ltr" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -111,7 +124,7 @@
               <!-- User profile and search -->
               <!-- ============================================================== -->
               <li>
-                <span class="text-white font-medium">Bonjour Steave </span>
+                <span class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?> </span>
               </li>
               <!-- ============================================================== -->
               <!-- User profile and search -->
@@ -136,7 +149,7 @@
               <li class="sidebar-item pt-2">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="index.html"
+                  href="index.php"
                   aria-expanded="false"
                 >
                   <i class="far fa-clock" aria-hidden="true"></i>
@@ -146,7 +159,7 @@
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="TodayMenu.html"
+                  href="TodayMenu.php"
                   aria-expanded="false"
                 >
                   <i class="fa fa-columns" aria-hidden="true"></i>
@@ -156,7 +169,7 @@
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="Commands.html"
+                  href="Commands.php"
                   aria-expanded="false"
                 >
                   <i class="fa fa-table" aria-hidden="true"></i>
@@ -166,7 +179,7 @@
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="blank.html"
+                  href="blank.php"
                   aria-expanded="false"
                 >
                   <i class="fa fa-columns" aria-hidden="true"></i>
@@ -176,7 +189,7 @@
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="Logout.html"
+                  href="Logoutss.php"
                   aria-expanded="false"
                 >
                   <i

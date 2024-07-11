@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
+<?php
+session_start();
+if (!isset($_SESSION['loggedin'])) {
+    header("Location: logout.php");
+    exit();
+}
+
+// Prevent caching
+header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
+header("Pragma: no-cache"); // HTTP 1.0
+header("Expires: 0"); // Proxies
+?>
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -16,13 +28,10 @@
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
   <!-- Custom CSS -->
+  <link href="plugins/bower_components/chartist/dist/chartist.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css" />
+  <!-- Custom CSS -->
   <link href="css/style.min.css" rel="stylesheet" />
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 
 <body>
@@ -91,7 +100,7 @@
             <!-- ============================================================== -->
             <li>
               <span
-                  class="text-white font-medium">Bonjour Steave   </span>
+                  class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?>   </span>
             </li>
             <!-- ============================================================== -->
             <!-- User profile and search -->
@@ -114,32 +123,32 @@
           <ul id="sidebarnav">
             <!-- User Profile-->
             <li class="sidebar-item pt-2">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
                 <i class="far fa-clock" aria-hidden="true"></i>
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="TodayMenu.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="TodayMenu.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
                 <span class="hide-menu">Today Menu</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.html"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.php"
                 aria-expanded="false">
                 <i class="fa fa-table" aria-hidden="true"></i>
                 <span class="hide-menu">Commands</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
                 <span class="hide-menu">Blank Page</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logout.html" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logoutss.php" aria-expanded="false">
                 <i class="fas fa-arrow-alt-circle-right" aria-hidden="true"></i>
                 <span class="hide-menu">Logout</span>
               </a>
@@ -156,14 +165,14 @@
     <!-- ============================================================== -->
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
-    <div class="page-wrapper" style="min-height: 250px">
+    <div class="page-wrapper">
       <!-- ============================================================== -->
       <!-- Bread crumb and right sidebar toggle -->
       <!-- ============================================================== -->
       <div class="page-breadcrumb bg-white">
         <div class="row align-items-center">
           <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-            <h4 class="page-title">Blank Page</h4>
+            <h4 class="page-title">Dashboard</h4>
           </div>
         </div>
         <!-- /.col-lg-12 -->
@@ -176,25 +185,20 @@
       <!-- ============================================================== -->
       <div class="container-fluid">
         <!-- ============================================================== -->
-        <!-- Start Page Content -->
+        <!-- Three charts -->
         <!-- ============================================================== -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="white-box">
-              <h3 class="box-title">Blank Page</h3>
-            </div>
-          </div>
+        <div class="row justify-content-center">
+        <!-- ============================================================== -->
+        <!-- PRODUCTS YEARLY SALES -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- RECENT SALES -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Recent Comments -->
+        <!-- ============================================================== -->
+
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Right sidebar -->
-        <!-- ============================================================== -->
-        <!-- .right-sidebar -->
-        <!-- ============================================================== -->
-        <!-- End Right sidebar -->
-        <!-- ============================================================== -->
       </div>
       <!-- ============================================================== -->
       <!-- End Container fluid  -->
@@ -202,21 +206,18 @@
       <!-- ============================================================== -->
       <!-- footer -->
       <!-- ============================================================== -->
-      
+      <footer class="footer text-center">
+        2024 © Ample Admin brought to you by
+        <a href="https://www.wrappixel.com/">wrappixel.com</a>
+      </footer>
       <!-- ============================================================== -->
       <!-- End footer -->
       <!-- ============================================================== -->
     </div>
-    <footer class="footer text-center">
-      2024 © Ample Admin brought to you by
-      <a href="https://www.wrappixel.com/">wrappixel.com</a>
-    </footer>
-    
     <!-- ============================================================== -->
     <!-- End Page wrapper  -->
     <!-- ============================================================== -->
   </div>
-  
   <!-- ============================================================== -->
   <!-- End Wrapper -->
   <!-- ============================================================== -->
@@ -227,12 +228,18 @@
   <!-- Bootstrap tether Core JavaScript -->
   <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/app-style-switcher.js"></script>
+  <script src="plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js"></script>
   <!--Wave Effects -->
   <script src="js/waves.js"></script>
   <!--Menu sidebar -->
   <script src="js/sidebarmenu.js"></script>
   <!--Custom JavaScript -->
   <script src="js/custom.js"></script>
+  <!--This page JavaScript -->
+  <!--chartis chart-->
+  <script src="plugins/bower_components/chartist/dist/chartist.min.js"></script>
+  <script src="plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+  <script src="js/pages/dashboards/dashboard1.js"></script>
 </body>
 
 </html>
