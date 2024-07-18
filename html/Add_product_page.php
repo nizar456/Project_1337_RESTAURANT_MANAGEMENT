@@ -160,9 +160,9 @@ header("Expires: 0"); // Proxies
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.php" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Add_product_page.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
-                <span class="hide-menu">Blank Page</span>
+                <span class="hide-menu">Add Product</span>
               </a>
             </li>
             <li class="sidebar-item">
@@ -190,7 +190,7 @@ header("Expires: 0"); // Proxies
       <div class="page-breadcrumb bg-white">
         <div class="row align-items-center">
           <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-            <h4 class="page-title">Blank Page</h4>
+            <h4 class="page-title">Add products</h4>
           </div>
         </div>
         <!-- /.col-lg-12 -->
