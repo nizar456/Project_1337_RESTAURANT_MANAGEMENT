@@ -146,9 +146,9 @@ header("Expires: 0"); // Proxies
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="blank.php" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Add_product_page.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
-                <span class="hide-menu">Blank Page</span>
+                <span class="hide-menu">Add Product</span>
               </a>
             </li>
             <li class="sidebar-item">

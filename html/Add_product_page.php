@@ -37,6 +37,19 @@ header("Expires: 0"); // Proxies
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        #message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
@@ -189,42 +202,45 @@ header("Expires: 0"); // Proxies
       <!-- Container fluid  -->
       <!-- ============================================================== -->
       <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="white-box">
-              <h3 class="box-title">Blank Page</h3>
-            </div>
-          </div>
+    <!-- =========De3mira=================== -->
+    <h2>Add a New Product</h2>
+    <div id="message"></div>
+    <form id="productForm" enctype="multipart/form-data">
+    <div class="mb-3">
+            <label for="productName" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="productName" name="productName" required>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Right sidebar -->
-        <!-- ============================================================== -->
-        <!-- .right-sidebar -->
-        <!-- ============================================================== -->
-        <!-- End Right sidebar -->
-        <!-- ============================================================== -->
-      </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-control" id="category" name="category" required>
+                <?php
+                // Fetch categories from the database
+                require_once 'db_connection.php';
+                $query = "SELECT id, nom FROM categories";
+                $result = $conn->query($query);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<option value=\"" . $row['id'] . "\">" . $row['nom'] . "</option>";
+                    }
+                }
+                ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="productImage" class="form-label">Product Image</label>
+            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>
+
       <!-- ============================================================== -->
       <!-- End Container fluid  -->
       <!-- ============================================================== -->
-      <!-- ============================================================== -->
-      <!-- footer -->
-      <!-- ============================================================== -->
-      
-      <!-- ============================================================== -->
-      <!-- End footer -->
-      <!-- ============================================================== -->
     </div>
     <footer class="footer text-center">
-      2024 © Ample Admin brought to you by
-      <a href="https://www.wrappixel.com/">wrappixel.com</a>
-    </footer>
+      2024 © 1337 
     
     <!-- ============================================================== -->
     <!-- End Page wrapper  -->
@@ -247,6 +263,56 @@ header("Expires: 0"); // Proxies
   <script src="js/sidebarmenu.js"></script>
   <!--Custom JavaScript -->
   <script src="js/custom.js"></script>
+  <!--<script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').innerText = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('message').innerText = 'An error occurred while uploading the image.';
+            });
+        });
+    </script>-->
+    <script>
+document.getElementById('productForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(this);
+    
+    fetch('add_product.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        var messageDiv = document.getElementById('message');
+        messageDiv.innerText = data.message;
+        messageDiv.style.display = 'block';
+        if (data.success) {
+            messageDiv.style.backgroundColor = 'green';
+            messageDiv.style.color = 'white';
+            document.getElementById('productForm').reset();
+        } else {
+            messageDiv.style.backgroundColor = 'red';
+            messageDiv.style.color = 'white';
+        }
+        setTimeout(() => {
+            messageDiv.style.display = 'none';
+        }, 3000);
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
 </body>
 
 </html>
