@@ -314,5 +314,4 @@ document.getElementById('productForm').addEventListener('submit', function(e) {
 });
 </script>
 </body>
-
 </html>
