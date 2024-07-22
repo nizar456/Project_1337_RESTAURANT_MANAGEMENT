@@ -40,6 +40,23 @@ header("Expires: 0"); // Proxies
 .command-card h5 {
     margin-top: 0;
 }
+.container-fluid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        .countdown {
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+        .title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
 </style>
 </head>
 
@@ -75,31 +92,22 @@ header("Expires: 0"); // Proxies
       </nav>
     </header>
     <aside class="left-sidebar" data-sidebarbg="skin6">
-      <div class="scroll-sidebar">
+    <div class="scroll-sidebar">
+        <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
           <ul id="sidebarnav">
-            <li class="sidebar-item pt-2">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
-                <i class="far fa-clock" aria-hidden="true"></i>
-                <span class="hide-menu">Dashboard</span>
-              </a>
-            </li>
+            <!-- User Profile-->
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="TodayMenu.php" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_TodayMenu.php" aria-expanded="false">
                 <i class="fa fa-columns" aria-hidden="true"></i>
                 <span class="hide-menu">Today Menu</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.php" aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_Commands.php"
+                aria-expanded="false">
                 <i class="fa fa-table" aria-hidden="true"></i>
-                <span class="hide-menu">Commands</span>
-              </a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Add_product_page.php" aria-expanded="false">
-                <i class="fa fa-columns" aria-hidden="true"></i>
-                <span class="hide-menu">Add Product</span>
+                <span class="hide-menu">Command your food</span>
               </a>
             </li>
             <li class="sidebar-item">
@@ -110,72 +118,20 @@ header("Expires: 0"); // Proxies
             </li>
           </ul>
         </nav>
+        <!-- End Sidebar navigation -->
       </div>
     </aside>
     <div class="page-wrapper">
       <div class="page-breadcrumb bg-white">
         <div class="row align-items-center">
           <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-            <h4 class="page-title">Commands</h4>
+            <h4 class="page-title">Command your food</h4>
           </div>
         </div>
       </div>
       <div class="container-fluid">
-        <?php
-        require_once 'db_connection.php';
-        
-        // Get current date
-        $currentDate = date('Y-m-d');
-        
-        // Query to get commands for the current day that are not done
-        $query = "SELECT c.id, c.date, c.table_num, c.etudiant_id, c.done, e.nom AS etudiant_name
-                  FROM command c
-                  JOIN etudiant e ON c.etudiant_id = e.id
-                  WHERE c.date = ? AND c.done = 0";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('s', $currentDate);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo '<div class="command-card">';
-                echo '<h5>Command ID: ' . $row['id'] . '</h5>';
-                echo '<p>Date: ' . $row['date'] . '</p>';
-                echo '<p>Table Number: ' . $row['table_num'] . '</p>';
-                echo '<p>Student Name: ' . $row['etudiant_name'] . '</p>';
-                
-                // Query to get products for the current command
-                $commandId = $row['id'];
-                $productQuery = "SELECT p.nom AS product_name, c.quantity
-                                 FROM contains c
-                                 JOIN products p ON c.product_id = p.id
-                                 WHERE c.command_id = ?";
-                $productStmt = $conn->prepare($productQuery);
-                $productStmt->bind_param('i', $commandId);
-                $productStmt->execute();
-                $productResult = $productStmt->get_result();
-                
-                echo '<ul>';
-                while ($productRow = $productResult->fetch_assoc()) {
-                    echo '<li>' . $productRow['product_name'] . ' - Quantity: ' . $productRow['quantity'] . '</li>';
-                }
-                echo '</ul>';
-                
-                echo '<form method="POST" action="validate_command.php">';
-                echo '<input type="hidden" name="command_id" value="' . $row['id'] . '">';
-                echo '<button type="submit" class="btn btn-success">Validate Command</button>';
-                echo '</form>';
-                
-                echo '</div>';
-            }
-        } else {
-            echo '<h2>No commands for today.</h2>';
-        }
-        
-        $stmt->close();
-        $conn->close();
-        ?>
+      <div class="title" id="title">Time Remaining to order your Lunch</div>
+      <div class="countdown" id="countdown"></div> 
       </div>
       <footer class="footer text-center">
         2024 © 1337
@@ -188,6 +144,55 @@ header("Expires: 0"); // Proxies
   <script src="js/waves.js"></script>
   <script src="js/sidebarmenu.js"></script>
   <script src="js/custom.js"></script>
+  <script>
+        function updateCountdown() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            let targetHour, targetMinute, targetSecond, titleText;
+
+            if (hours < 12) {
+                // Countdown to 12:00
+                targetHour = 12;
+                targetMinute = 0;
+                targetSecond = 0;
+                titleText = "Time Remaining to order your Lunch";
+            } else if (hours >= 12 && hours < 15) {
+                // Between 12:00 and 15:00
+                document.getElementById('title').textContent = "Hello World";
+                document.getElementById('countdown').textContent = "";
+                return;
+            } else {
+                // Countdown to 15:00
+                targetHour = 15;
+                targetMinute = 0;
+                targetSecond = 0;
+                titleText = "Time Remaining to order your Lunch";
+            }
+
+            const targetTime = new Date();
+            targetTime.setHours(targetHour, targetMinute, targetSecond, 0);
+
+            const remainingTime = targetTime - now;
+
+            if (remainingTime <= 0) {
+                document.getElementById('title').textContent = "Hello World";
+                document.getElementById('countdown').textContent = "";
+                return;
+            }
+
+            const remainingHours = Math.floor(remainingTime / (1000 * 60 * 60));
+            const remainingMinutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const remainingSeconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            document.getElementById('title').textContent = titleText;
+            document.getElementById('countdown').textContent = `${remainingHours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        setInterval(updateCountdown, 1000);
+    </script>
 </body>
 
 </html>

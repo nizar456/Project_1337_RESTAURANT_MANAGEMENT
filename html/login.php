@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['loggedin'] = true;
         $_SESSION['user_name'] = $row['nom'];//stock the name in the ss
         $_SESSION['role'] = 'student';
-        header("Location: s_index.php");
+        header("Location: s_TodayMenu.php");
         exit();
     }
 
