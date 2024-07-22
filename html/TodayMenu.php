@@ -47,30 +47,13 @@ if ($result->num_rows > 0) {
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="keywords"
-      content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template"
-    />
-    <meta
-      name="description"
-      content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework"
-    />
+    <meta name="keywords" content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template" />
+    <meta name="description" content="Ample Admin Lite is powerful and clean admin dashboard template, inspired from Bootstrap Framework" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>1337 Restaurant </title>
-    <link
-      rel="canonical"
-      href="https://www.wrappixel.com/templates/ample-admin-lite/"
-    />
-    <!-- Favicon icon -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="plugins/images/favicon.png"
-    />
-    <!-- Custom CSS -->
+    <title>1337 Restaurant</title>
+    <link rel="canonical" href="https://www.wrappixel.com/templates/ample-admin-lite/" />
+    <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
     <link href="css/style.min.css" rel="stylesheet" />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -238,90 +221,100 @@ if ($result->num_rows > 0) {
                 </div>
             </div>
             <div class="container-fluid">
-                <form id="menuForm" method="POST" action="save_menu.php">
-                <input type="hidden" id="selectedProducts" name="selectedProducts" value="">
-                <div id="products">
-                    <?php if (!empty($productsByCategory)): ?>
-                        <?php foreach ($productsByCategory as $categoryId => $categoryData): ?>
-                            <h2 class="category-title"><?php echo htmlspecialchars($categoryData['name']); ?></h2>
-                            <div class="row mx-0">
-                                <?php foreach ($categoryData['products'] as $product): ?>
-                                    <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
-                                    <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
-                                        <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
-                                        <div class="card-img">
-                                            <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                <form id="menuForm" method="POST">
+                    <input type="hidden" id="selectedProducts" name="selectedProducts" value="">
+                    <div id="products">
+                        <?php if (!empty($productsByCategory)): ?>
+                            <?php foreach ($productsByCategory as $categoryId => $categoryData): ?>
+                                <h2 class="category-title"><?php echo htmlspecialchars($categoryData['name']); ?></h2>
+                                <div class="row mx-0">
+                                    <?php foreach ($categoryData['products'] as $product): ?>
+                                        <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
+                                            <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
+                                                <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
+                                                <div class="card-img">
+                                                    <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <p>No products found.</p>
-                    <?php endif; ?>
-                </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>No products found.</p>
+                        <?php endif; ?>
+                    </div>
                     <div class="container-btn">
                         <button type="submit" class="button">Validate</button>
                     </div>
-            </form>
+                </form>
             </div>
             <footer class="footer text-center">
-            2024 © 1337 Restaurant
+                2024 © 1337 Restaurant
             </footer>
-            </div>
+        </div>
     </div>
     <script>
-$(document).ready(function() {
-        let selectedProducts = [];
+        $(document).ready(function() {
+            let selectedProducts = [];
 
-        $(".card").on("click", function() {
-            const productId = $(this).data("product-id");
-            $(this).toggleClass("selected");
-            if ($(this).hasClass("selected")) {
-                selectedProducts.push(productId);
-            } else {
-                selectedProducts = selectedProducts.filter(id => id !== productId);
-            }
-            $("#selectedProducts").val(selectedProducts.join(","));
-        });
-
-        $("#menuForm").on("submit", function(e) {
-            e.preventDefault(); // Prevent default form submission
-
-            $.ajax({
-                url: "success.php",
-                type: "POST",
-                dataType: "json",
-                data: { selectedProducts: $("#selectedProducts").val() },
-                success: function(data) {
-                    if (data.length > 0) {
-                        let html = "<h3>Selected Products</h3><ul>";
-                        $.each(data, function(index, item) {
-                            html += "<li>Product: " + item.product_name + " (Category: " + item.category_name + ")</li>";
-                        });
-                        html += "</ul>";
-
-                        $("<div>").html(html).dialog({
-                            title: "Success",
-                            modal: true,
-                            buttons: {
-                                "OK": function() {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        });
-                    } else {
-                        alert("No products were selected or found.");
-                    }
-                },
-                error: function() {
-                    alert("An error occurred while processing your request.");
+            $(".card").on("click", function() {
+                const productId = $(this).data("product-id");
+                $(this).toggleClass("selected");
+                if ($(this).hasClass("selected")) {
+                    selectedProducts.push(productId);
+                } else {
+                    selectedProducts = selectedProducts.filter(id => id !== productId);
                 }
+                $("#selectedProducts").val(selectedProducts.join(","));
+            });
+
+            $("#menuForm").on("submit", function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                const selectedProductsList = $("#selectedProducts").val();
+                if (selectedProductsList === "") {
+                    alert("No products were selected.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "save_menu.php",
+                    type: "POST",
+                    data: { selectedProducts: selectedProductsList },
+                    success: function(data) {
+                        let selectedProducts = JSON.parse(data);
+                        if (selectedProducts.length > 0) {
+                            let html = "<h3>Selected Products</h3><ul>";
+                            $.each(selectedProducts, function(index, item) {
+                                html += "<li>Product: " + item.product_name + " (Category: " + item.category_name + ")</li>";
+                            });
+                            html += "</ul>";
+
+                            $("<div>").html(html).dialog({
+                                title: "Confirm Selection",
+                                modal: true,
+                                buttons: {
+                                    "Confirm": function() {
+                                        $(this).dialog("close");
+                                        $("#menuForm")[0].submit();
+                                    },
+                                    "Cancel": function() {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            });
+                        } else {
+                            alert("No products were selected or found.");
+                        }
+                    },
+                    error: function() {
+                        alert("An error occurred while processing your request.");
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
     <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app-style-switcher.js"></script>
