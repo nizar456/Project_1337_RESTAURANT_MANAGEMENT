@@ -9,6 +9,12 @@ File: scss
 /*Shadow*/
 /* transitions */
 /* Dark transparent bg */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
 .search-box .app-search .form-control {
   border-radius: 0px;
 }
@@ -13699,7 +13705,6 @@ sidebar navigation
   font-size: 23px;
   color: #54667a;
   text-align: center;
-  font-size: 14px;
 }
 .sidebar-nav ul .sidebar-item .sidebar-link:hover {
   background: rgba(0, 0, 0, 0.07);

@@ -4,83 +4,57 @@ if (!isset($_SESSION['loggedin'])) {
     header("Location: logout.php");
     exit();
 }
-require_once 'db_connection.php';
+require_once 'db_connection.php'; // Make sure this file includes the $conn variable
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Retrieve selected product IDs from POST request
+$selectedProducts = isset($_POST['selectedProducts']) ? $_POST['selectedProducts'] : '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!empty($_POST['selectedProducts'])) {
-        $selectedProducts = explode(',', $_POST['selectedProducts']);
-        $menuDate = date('Y-m-d'); // Current date
+// Ensure that the selectedProducts is not empty
+if (!empty($selectedProducts)) {
+    // Split the product IDs into an array
+    $productIds = explode(',', $selectedProducts);
+    
+    // Clean up the array
+    $productIds = array_map('intval', array_filter($productIds));
 
-        // Start a transaction to ensure atomicity
-        $conn->begin_transaction();
+    if (!empty($productIds)) {
+        // Prepare SQL statements
+        $todayMenuDate = date('Y-m-d');
 
-        try {
-            // Insert into today_menu
-            if ($stmt = $conn->prepare("INSERT INTO today_menu (menu_date) VALUES (?)")) {
-                $stmt->bind_param("s", $menuDate);
-                if (!$stmt->execute()) {
-                    throw new Exception("Error executing statement for today_menu: " . $stmt->error);
-                }
-                $menuId = $stmt->insert_id;
-                $stmt->close();
-            } else {
-                throw new Exception("Error preparing statement for today_menu: " . $conn->error);
-            }
+        // Delete existing menu for today if it exists
+        $deleteExistingMenuStmt = $conn->prepare("DELETE FROM today_menu WHERE menu_date = ?");
+        $deleteExistingMenuStmt->bind_param('s', $todayMenuDate);
+        $deleteExistingMenuStmt->execute();
+        $deleteExistingMenuStmt->close();
 
-            // Insert into menu_contains
-            if ($stmt = $conn->prepare("INSERT INTO menu_contains (menu_id, product_id) VALUES (?, ?)")) {
-                foreach ($selectedProducts as $productId) {
-                    $productId = (int)$productId; // Ensure product ID is an integer
-                    // Check if product_id exists in the products table
-                    $checkStmt = $conn->prepare("SELECT COUNT(*) FROM products WHERE id = ?");
-                    $checkStmt->bind_param("i", $productId);
-                    $checkStmt->execute();
-                    $checkStmt->bind_result($count);
-                    $checkStmt->fetch();
-                    $checkStmt->close();
+        // Insert new menu record for today
+        $insertMenuStmt = $conn->prepare("INSERT INTO today_menu (menu_date) VALUES (?)");
+        $insertMenuStmt->bind_param('s', $todayMenuDate);
+        $insertMenuStmt->execute();
+        $menuId = $conn->insert_id; // Get the last inserted menu ID
 
-                    if ($count == 0) {
-                        throw new Exception("Product ID $productId does not exist in the products table.");
-                    }
-
-                    $stmt->bind_param("ii", $menuId, $productId);
-                    if (!$stmt->execute()) {
-                        throw new Exception("Error inserting product $productId: " . $stmt->error);
-                    }
-                }
-                $stmt->close();
-            } else {
-                throw new Exception("Error preparing statement for menu_contains: " . $conn->error);
-            }
-
-            // Commit transaction
-            $conn->commit();
-
-            // Redirect to success page
-            header("Location: success.php");
-            exit();
-        } catch (Exception $e) {
-            // Rollback transaction if an error occurs
-            $conn->rollback();
-
-            // Log the error
-            error_log($e->getMessage());
-
-            // Redirect to error page
-            header("Location: error.php?error=" . urlencode($e->getMessage()));
-            exit();
+        // Insert selected products into menu_contains table
+        $insertMenuContainsStmt = $conn->prepare("INSERT INTO menu_contains (menu_id, product_id) VALUES (?, ?)");
+        foreach ($productIds as $productId) {
+            $insertMenuContainsStmt->bind_param('ii', $menuId, $productId);
+            $insertMenuContainsStmt->execute();
         }
+
+        // Close statements
+        $insertMenuStmt->close();
+        $insertMenuContainsStmt->close();
+        
+        // Redirect to success page with a query parameter
+        header("Location: success.php?menu_id=$menuId");
     } else {
-        error_log("No products selected in POST data: " . print_r($_POST, true));
-        header("Location: error.php?error=no_products");
-        exit();
+        // If no products are selected, redirect with an error message
+        header("Location: todaymenu.php?error=No products selected");
     }
 } else {
-    error_log("Invalid request method.");
-    header("Location: error.php?error=invalid_request");
-    exit();
+    // If selectedProducts is empty, redirect with an error message
+    header("Location: todaymenu.php?error=No products selected");
 }
+
+// Close connection
+$conn->close();
 ?>
