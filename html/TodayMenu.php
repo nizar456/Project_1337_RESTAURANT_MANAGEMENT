@@ -47,30 +47,13 @@ if ($result->num_rows > 0) {
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="keywords"
-      content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template"
-    />
-    <meta
-      name="description"
-      content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework"
-    />
+    <meta name="keywords" content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template" />
+    <meta name="description" content="Ample Admin Lite is powerful and clean admin dashboard template, inspired from Bootstrap Framework" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>1337 Restaurant </title>
-    <link
-      rel="canonical"
-      href="https://www.wrappixel.com/templates/ample-admin-lite/"
-    />
-    <!-- Favicon icon -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="plugins/images/favicon.png"
-    />
-    <!-- Custom CSS -->
+    <title>1337 Restaurant</title>
+    <link rel="canonical" href="https://www.wrappixel.com/templates/ample-admin-lite/" />
+    <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
     <link href="css/style.min.css" rel="stylesheet" />
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -322,122 +305,64 @@ if ($result->num_rows > 0) {
                     <div class="container-btn">
                         <button type="submit" class="button">Validate</button>
                     </div>
-            </form>
+                </form>
             </div>
             <footer class="footer text-center">
-            2024 © 1337 Restaurant
+                2024 © 1337 Restaurant
             </footer>
             </div>
-            <div id="overlay"></div>
-    <div id="popup">
-        <span class="close" onclick="closePopup()">×</span>
-        <h2>Selected Products</h2>
-        <ul>
-            <?php if (!empty($products)): ?>
-                <?php foreach ($products as $product): ?>
-                    <li><?php echo htmlspecialchars($product['product_name']) . ' (' . htmlspecialchars($product['category_name']) . ')'; ?></li>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <li>No products selected.</li>
-            <?php endif; ?>
-        </ul>
-    </div>
     </div>
     <script>
-        $(document).ready(function() {
-    // Object to store selected products by category
-    let selectedProductsByCategory = {};
+$(document).ready(function() {
+        let selectedProducts = [];
 
-    // Function to toggle selected class and update selection
-    $(".card").on("click", function() {
-        $(this).toggleClass("selected");
-
-        // Get product and category details from data attributes
-        const productId = $(this).data("product-id");
-        const productName = $(this).find('.product-name').text().trim();
-        const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
-        const categoryName = $(this).closest('.row').prev('.category-title').text().trim();
-
-        if ($(this).hasClass("selected")) {
-            // Add product to selected category
-            if (!selectedProductsByCategory[categoryId]) {
-                selectedProductsByCategory[categoryId] = {
-                    name: categoryName,
-                    products: []
-                };
+        $(".card").on("click", function() {
+            const productId = $(this).data("product-id");
+            $(this).toggleClass("selected");
+            if ($(this).hasClass("selected")) {
+                selectedProducts.push(productId);
+            } else {
+                selectedProducts = selectedProducts.filter(id => id !== productId);
             }
-            selectedProductsByCategory[categoryId].products.push(productName);
-        } else {
-            // Remove product from selected category
-            const index = selectedProductsByCategory[categoryId].products.indexOf(productName);
-            if (index > -1) {
-                selectedProductsByCategory[categoryId].products.splice(index, 1);
-            }
-            // Remove category if empty
-            if (selectedProductsByCategory[categoryId].products.length === 0) {
-                delete selectedProductsByCategory[categoryId];
-            }
-        }
-    });
-
-    // Function to handle form submission
-    $("#menuForm").on("submit", function(event) {
-        event.preventDefault();
-
-        // Collect selected product IDs
-        let selectedProductIds = [];
-        $(".card.selected").each(function() {
-            selectedProductIds.push($(this).data("product-id"));
+            $("#selectedProducts").val(selectedProducts.join(","));
         });
 
-        $("#selectedProducts").val(selectedProductIds.join(',')); // Set hidden field value
+        $("#menuForm").on("submit", function(e) {
+            e.preventDefault(); // Prevent default form submission
 
-        $.ajax({
-            type: "POST",
-            url: "save_menu.php",
-            data: { selectedProducts: selectedProductIds.join(',') },
-            success: function(response) {
-                // Show categorized popup with selected products
-                let popupContent = $("#popup ul");
-                popupContent.empty();
-
-                if (Object.keys(selectedProductsByCategory).length > 0) {
-                    // Iterate over each category
-                    for (let categoryId in selectedProductsByCategory) {
-                        const category = selectedProductsByCategory[categoryId];
-                        popupContent.append(`<li><strong>${category.name}:</strong></li>`);
-                        // List all selected products under this category
-                        category.products.forEach(function(product) {
-                            popupContent.append(`<li> - ${product}</li>`);
+            $.ajax({
+                url: "success.php",
+                type: "POST",
+                dataType: "json",
+                data: { selectedProducts: $("#selectedProducts").val() },
+                success: function(data) {
+                    if (data.length > 0) {
+                        let html = "<h3>Selected Products</h3><ul>";
+                        $.each(data, function(index, item) {
+                            html += "<li>Product: " + item.product_name + " (Category: " + item.category_name + ")</li>";
                         });
+                        html += "</ul>";
+
+                        $("<div>").html(html).dialog({
+                            title: "Success",
+                            modal: true,
+                            buttons: {
+                                "OK": function() {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+                    } else {
+                        alert("No products were selected or found.");
                     }
-                } else {
-                    popupContent.append(`<li>No products selected.</li>`);
+                },
+                error: function() {
+                    alert("An error occurred while processing your request.");
                 }
-                $("#popup").show();
-                $("#overlay").show();
-              // Close popup after 3 seconds
-            },
-            error: function() {
-                alert('An error occurred.');
-            }
+            });
         });
     });
-
-    // Function to close the popup
-    $(".close").on("click", function() {
-        closePopup();
-    });
-
-    function closePopup() {
-        $("#popup").hide();
-        $("#overlay").hide();
-    }
-});
-
 </script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app-style-switcher.js"></script>

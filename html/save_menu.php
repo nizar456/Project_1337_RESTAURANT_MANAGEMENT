@@ -47,12 +47,14 @@ if (!empty($selectedProducts)) {
         // Redirect to success page with a query parameter
         header("Location: success.php?menu_id=$menuId");
     } else {
-        // If no products are selected, redirect with an error message
-        header("Location: todaymenu.php?error=No products selected");
+        error_log("No products selected in POST data: " . print_r($_POST, true));
+        header("Location: error.php?error=no_products");
+        exit();
     }
 } else {
-    // If selectedProducts is empty, redirect with an error message
-    header("Location: todaymenu.php?error=No products selected");
+    error_log("Invalid request method.");
+    header("Location: error.php?error=invalid_request");
+    exit();
 }
 
 // Close connection
