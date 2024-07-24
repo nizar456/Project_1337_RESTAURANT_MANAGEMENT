@@ -4,12 +4,48 @@ if (!isset($_SESSION['loggedin'])) {
     header("Location: logout.php");
     exit();
 }
+require_once 'db_connection.php';
 
 // Prevent caching
 header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
 header("Pragma: no-cache"); // HTTP 1.0
 header("Expires: 0"); // Proxies
+
+// Query to get today's menu items with their category names, ordered by category ID
+$sql = "
+    SELECT 
+        mc.id AS menu_contains_id,
+        p.id AS product_id,
+        p.nom AS product_name,
+        p.url AS product_url,
+        c.id AS category_id,
+        c.nom AS category_name
+    FROM today_menu tm
+    JOIN menu_contains mc ON mc.menu_id = tm.id
+    JOIN products p ON mc.product_id = p.id
+    LEFT JOIN categories c ON p.category_id = c.id
+    WHERE tm.menu_date = CURDATE() -- Ensure we only get today's menu
+    ORDER BY c.id, p.nom
+";
+$result = $conn->query($sql);
+$menuByCategory = [];
+
+// Organize today's menu by category
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $categoryId = $row['category_id'];
+        $categoryName = $row['category_name'];
+        if (!isset($menuByCategory[$categoryId])) {
+            $menuByCategory[$categoryId] = [
+                'name' => $categoryName,
+                'products' => []
+            ];
+        }
+        $menuByCategory[$categoryId]['products'][] = $row;
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -30,6 +66,19 @@ header("Expires: 0"); // Proxies
     <!-- Custom CSS -->
     <link href="css/style.min.css" rel="stylesheet" />
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+        }
+        .hide-menu{
+            font-family: "Nunito", sans-serif;
+            font-size: 14px;
+        }
         .command-card {
             border: 1px solid #ddd;
             padding: 15px;
@@ -50,8 +99,9 @@ header("Expires: 0"); // Proxies
             flex-direction: column;
             background-color: #f0f0f0;
             text-align: center;
+            
         }
-
+        
         .countdown {
             font-size: 3rem;
             margin: 20px 0;
@@ -60,6 +110,65 @@ header("Expires: 0"); // Proxies
         .title {
             font-size: 1.5rem;
             margin-bottom: 20px;
+        }
+        .product-name{
+            margin-top: 15px;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            font-size: 19px;
+        }
+        .snippet-body {
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin: 40px auto;
+        }
+        #header {
+            width: 100%;
+            height: 60px;
+            box-shadow: 5px 5px 15px #e8e8e8;
+        }
+        .col-lg-4,
+        .col-md-6 {
+            padding-right: 0;
+        }
+        .card {
+            padding: 10px;
+            cursor: pointer;
+            transition: 0.3s all ease-in-out;
+            height: 350px;
+            margin-left: 30px
+        }
+        .card.selected {
+            box-shadow: 2px 2px 15px greenyellow;
+            transform: scale(1.02);
+        }
+        .card:hover {
+            box-shadow: 2px 2px 15px #fd9a6ce5;
+            transform: scale(1.02);
+        }
+        .card .product-name {
+            font-weight: 600;
+        }
+        .card-img img {
+            padding: auto;
+            margin-top: 40px;
+            width: inherit;
+            height: 200px;
+            object-fit: contain;
+            display: block;
+    
+        }
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            margin-left: 15px;
+        }
+        .navbar-collapse .collapse{
+            font-family: "Nunito", sans-serif;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -136,22 +245,50 @@ header("Expires: 0"); // Proxies
                     </div>
                 </div>
             </div>
-            <div class="container-fluid">
-                <div class="title" id="title">Time Remaining to order your Lunch</div>
-                <div class="countdown" id="countdown"></div>
+            <div class="content">
+                <div class="container-fluid" id="cont">
+                    <div class="title" id="title">Time Remaining to order your Lunch</div>
+                    <div class="countdown" id="countdown"></div>
+                </div>
+                <div id="menu">
+                    <div id="products">
+                        <?php if (!empty($menuByCategory)): ?>
+                            <?php foreach ($menuByCategory as $categoryId => $categoryData): ?>
+                                <h2 class="category-title" data-category-id="<?php echo htmlspecialchars($categoryId); ?>">
+                                    <?php echo htmlspecialchars($categoryData['name']); ?>
+                                </h2>
+                                <div class="row mx-0">
+                                    <?php foreach ($categoryData['products'] as $product): ?>
+                                        <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
+                                            <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
+                                                <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
+                                                <div class="card-img">
+                                                    <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p>No menu items found for today.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>    
             </div>
+
             <footer class="footer text-center">
-                2024 © 1337
+                2024 © 1337 Restaurant
             </footer>
         </div>
-    </div>
+        
     <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app-style-switcher.js"></script>
     <script src="js/waves.js"></script>
     <script src="js/sidebarmenu.js"></script>
     <script src="js/custom.js"></script>
-    <script>
+    <script> 
         function updateCountdown() {
             const now = new Date();
             const hours = now.getHours();
@@ -160,16 +297,18 @@ header("Expires: 0"); // Proxies
 
             let targetHour, targetMinute, targetSecond, titleText;
 
-            if (hours < 12) {
+            if (hours < 7) {
                 // Countdown to 12:00
-                targetHour = 12;
+                targetHour = 7;
                 targetMinute = 0;
                 targetSecond = 0;
                 titleText = "Time Remaining to order your Lunch";
-            } else if (hours >= 12 && hours < 15) {
+            } else if (hours >= 7 && hours < 15) {
                 // Between 12:00 and 15:00
-                document.getElementById('title').textContent = "Hello World";
-                document.getElementById('countdown').textContent = "";
+                document.getElementById('title').style.display = "none";
+                document.getElementById('countdown').style.display = "none";
+                document.getElementById('cont').style.display = "none";
+                document.getElementById('menu').style.display = "block"; // Show the menu
                 return;
             } else if (hours >= 15) {
                 // Countdown to 12:00 the next day
@@ -177,6 +316,9 @@ header("Expires: 0"); // Proxies
                 targetMinute = 0;
                 targetSecond = 0;
                 titleText = "Time Remaining to order your Lunch";
+                document.getElementById('title').style.display = "block";
+                document.getElementById('countdown').style.display = "block";
+                document.getElementById('menu').style.display = "none"; // Hide the menu
             }
 
             const targetTime = new Date();
@@ -185,8 +327,9 @@ header("Expires: 0"); // Proxies
             const remainingTime = targetTime - now;
 
             if (remainingTime <= 0) {
-                document.getElementById('title').textContent = "Hello World";
-                document.getElementById('countdown').textContent = "";
+                document.getElementById('title').style.display = "none";
+                document.getElementById('countdown').style.display = "none";
+                document.getElementById('menu').style.display = "block";
                 return;
             }
 
@@ -199,6 +342,7 @@ header("Expires: 0"); // Proxies
         }
 
         setInterval(updateCountdown, 1000);
+    
     </script>
 </body>
 
