@@ -73,10 +73,20 @@ if ($menuId !== null) {
     <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
     <link href="css/style.min.css" rel="stylesheet" />
     <style>
+        .category-title {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
         .product-card {
-            width: 100%;
-            max-width: 300px;
-            margin: 10px auto;
+            flex: 0 1 calc(33.333% - 20px);
+            max-width: calc(33.333% - 20px);
+            margin: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             overflow: hidden;
@@ -154,13 +164,11 @@ if ($menuId !== null) {
                     <?php if (!empty($productsByCategory)): ?>
                         <?php foreach ($productsByCategory as $categoryId => $categoryData): ?>
                             <h2 class="category-title"><?php echo htmlspecialchars($categoryData['name']); ?></h2>
-                            <div class="row mx-0">
+                            <div class="product-container">
                                 <?php foreach ($categoryData['products'] as $product): ?>
-                                    <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
-                                        <div class="product-card">
-                                            <div class="product-name"><?php echo htmlspecialchars($product['product_name']); ?></div>
-                                            <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>"/>
-                                        </div>
+                                    <div class="product-card">
+                                        <div class="product-name"><?php echo htmlspecialchars($product['product_name']); ?></div>
+                                        <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>"/>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
