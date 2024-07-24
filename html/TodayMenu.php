@@ -295,29 +295,29 @@ if ($result->num_rows > 0) {
                 <form id="menuForm" method="POST" action="save_menu.php">
                 <input type="hidden" id="selectedProducts" name="selectedProducts" value="">
                 <div id="products">
-            <?php if (!empty($productsByCategory)): ?>
-                <?php foreach ($productsByCategory as $categoryId => $categoryData): ?>
-                    <!-- Add data-category-id attribute here -->
-                    <h2 class="category-title" data-category-id="<?php echo htmlspecialchars($categoryId); ?>">
-                        <?php echo htmlspecialchars($categoryData['name']); ?>
-                    </h2>
-                    <div class="row mx-0">
-                        <?php foreach ($categoryData['products'] as $product): ?>
-                            <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
-                                <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
-                                    <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
-                                    <div class="card-img">
-                                        <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                    <?php if (!empty($productsByCategory)): ?>
+                        <?php foreach ($productsByCategory as $categoryId => $categoryData): ?>
+                            <!-- Add data-category-id attribute here -->
+                            <h2 class="category-title" data-category-id="<?php echo htmlspecialchars($categoryId); ?>">
+                                <?php echo htmlspecialchars($categoryData['name']); ?>
+                            </h2>
+                            <div class="row mx-0">
+                                <?php foreach ($categoryData['products'] as $product): ?>
+                                    <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
+                                        <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
+                                            <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
+                                            <div class="card-img">
+                                                <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         <?php endforeach; ?>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No products found.</p>
-            <?php endif; ?>
-        </div>
+                    <?php else: ?>
+                        <p>No products found.</p>
+                    <?php endif; ?>
+                </div>
 
                     <div class="container-btn">
                         <button type="submit" class="button">Validate</button>
