@@ -9,10 +9,41 @@ if (!isset($_SESSION['loggedin'])) {
 header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
 header("Pragma: no-cache"); // HTTP 1.0
 header("Expires: 0"); // Proxies
+
+include 'db_connection.php'; // Include your database connection script
+
+// Fetch the number of students
+$studentsQuery = "SELECT COUNT(*) AS total_students FROM etudiant";
+$studentsResult = $conn->query($studentsQuery);
+$studentsRow = $studentsResult->fetch_assoc();
+$totalStudents = $studentsRow['total_students'];
+
+// Fetch the number of students who ate today
+$todayDate = date('Y-m-d');
+$studentsAteQuery = "SELECT COUNT(DISTINCT command.etudiant_id) AS students_ate_today 
+                     FROM command 
+                     WHERE date = '$todayDate' AND done = 1";
+$studentsAteResult = $conn->query($studentsAteQuery);
+$studentsAteRow = $studentsAteResult->fetch_assoc();
+$studentsAteToday = $studentsAteRow['students_ate_today'];
+
+// Fetch the percentage of students who chose each option in the principal food category
+$categoryQuery = "SELECT products.nom, COUNT(contains.product_id) AS count 
+                  FROM contains 
+                  JOIN command ON contains.command_id = command.id 
+                  JOIN products ON contains.product_id = products.id 
+                  JOIN categories ON products.category_id = categories.id 
+                  WHERE command.date = '$todayDate' AND categories.nom = 'Principal Food' 
+                  GROUP BY products.nom";
+$categoryResult = $conn->query($categoryQuery);
+
+$categoryData = [];
+while ($row = $categoryResult->fetch_assoc()) {
+    $categoryData[] = ['name' => $row['nom'], 'count' => $row['count']];
+}
 ?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
-
 
 <head>
   <meta charset="utf-8" />
@@ -36,93 +67,40 @@ header("Expires: 0"); // Proxies
 </head>
 
 <body>
-  <!-- ============================================================== -->
-  <!-- Preloader - style you can find in spinners.css -->
-  <!-- ============================================================== -->
   <div class="preloader">
     <div class="lds-ripple">
       <div class="lds-pos"></div>
       <div class="lds-pos"></div>
     </div>
   </div>
-  <!-- ============================================================== -->
-  <!-- Main wrapper - style you can find in pages.scss -->
-  <!-- ============================================================== -->
   <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
     data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
-    <!-- ============================================================== -->
-    <!-- Topbar header - style you can find in pages.scss -->
-    <!-- ============================================================== -->
     <header class="topbar" data-navbarbg="skin5">
       <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <div class="navbar-header" data-logobg="skin6">
-          <!-- ============================================================== -->
-          <!-- Logo -->
-          <!-- ============================================================== -->
-          <a class="navbar-brand" href="index.html">
-            <!-- Logo icon -->
+          <a class="navbar-brand" href="index.php">
             <b class="logo-icon">
-              <!-- Dark Logo icon -->
               <img src="plugins/images/logo-icon.png" alt="homepage" />
             </b>
-            <!--End Logo icon -->
-            <!-- Logo text -->
             <span class="logo-text">
-              <!-- dark Logo text -->
               <img src="plugins/images/logo-text.png" alt="homepage" />
             </span>
           </a>
-          <!-- ============================================================== -->
-          <!-- End Logo -->
-          <!-- ============================================================== -->
-          <!-- ============================================================== -->
-          <!-- toggle and nav items -->
-          <!-- ============================================================== -->
-          <a class="
-                nav-toggler
-                waves-effect waves-light
-                text-dark
-                d-block d-md-none
-              " href="javascript:void(0)"><i class="ti-menu ti-close"></i></a>
+          <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none" href="javascript:void(0)"><i class="ti-menu ti-close"></i></a>
         </div>
-        <!-- ============================================================== -->
-        <!-- End Logo -->
-        <!-- ============================================================== -->
         <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-          <!-- ============================================================== -->
-          <!-- Right side toggle and nav items -->
-          <!-- ============================================================== -->
           <ul class="navbar-nav ms-auto d-flex align-items-center">
-            <!-- ============================================================== -->
-            <!-- Search -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- User profile and search -->
-            <!-- ============================================================== -->
             <li>
-              <span
-                  class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?>   </span>
+              <span class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
             </li>
-            <!-- ============================================================== -->
-            <!-- User profile and search -->
-            <!-- ============================================================== -->
-          </ul>
+            </ul>
         </div>
       </nav>
     </header>
-    <!-- ============================================================== -->
-    <!-- End Topbar header -->
-    <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- Left Sidebar - style you can find in sidebar.scss  -->
-    <!-- ============================================================== -->
     <aside class="left-sidebar" data-sidebarbg="skin6">
-      <!-- Sidebar scroll-->
       <div class="scroll-sidebar">
-        <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
           <ul id="sidebarnav">
-            <!-- User Profile-->
             <li class="sidebar-item pt-2">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
                 <i class="far fa-clock" aria-hidden="true"></i>
@@ -136,8 +114,7 @@ header("Expires: 0"); // Proxies
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.php"
-                aria-expanded="false">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Commands.php" aria-expanded="false">
                 <i class="fa fa-table" aria-hidden="true"></i>
                 <span class="hide-menu">Commands</span>
               </a>
@@ -156,91 +133,87 @@ header("Expires: 0"); // Proxies
             </li>
           </ul>
         </nav>
-        <!-- End Sidebar navigation -->
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!-- ============================================================== -->
-    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
-    <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- Page wrapper  -->
-    <!-- ============================================================== -->
     <div class="page-wrapper">
-      <!-- ============================================================== -->
-      <!-- Bread crumb and right sidebar toggle -->
-      <!-- ============================================================== -->
       <div class="page-breadcrumb bg-white">
         <div class="row align-items-center">
           <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
             <h4 class="page-title">Dashboard</h4>
           </div>
         </div>
-        <!-- /.col-lg-12 -->
       </div>
-      <!-- ============================================================== -->
-      <!-- End Bread crumb and right sidebar toggle -->
-      <!-- ============================================================== -->
-      <!-- ============================================================== -->
-      <!-- Container fluid  -->
-      <!-- ============================================================== -->
       <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Three charts -->
-        <!-- ============================================================== -->
         <div class="row justify-content-center">
-        <!-- ============================================================== -->
-        <!-- PRODUCTS YEARLY SALES -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- RECENT SALES -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Recent Comments -->
-        <!-- ============================================================== -->
-
+          <!-- Number of Students -->
+          <div class="col-lg-4 col-md-6">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <p class="card-text"><?php echo $totalStudents; ?></p>
+              </div>
+            </div>
+          </div>
+          <!-- Number of Students who Ate Today -->
+          <div class="col-lg-4 col-md-6">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Students Ate Today</h5>
+                <p class="card-text"><?php echo $studentsAteToday; ?></p>
+              </div>
+            </div>
+          </div>
+          <!-- Principal Food Choices -->
+          <div class="col-lg-4 col-md-6">
+            <div class="card text-center">
+              <div class="card-body">
+                <h5 class="card-title">Principal Food Choices</h5>
+                <canvas id="foodChoicesChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <!-- ============================================================== -->
-      <!-- End Container fluid  -->
-      <!-- ============================================================== -->
-      <!-- ============================================================== -->
-      <!-- footer -->
-      <!-- ============================================================== -->
       <footer class="footer text-center">
         2024 © Ample Admin brought to you by
         <a href="https://www.wrappixel.com/">wrappixel.com</a>
       </footer>
-      <!-- ============================================================== -->
-      <!-- End footer -->
-      <!-- ============================================================== -->
     </div>
-    <!-- ============================================================== -->
-    <!-- End Page wrapper  -->
-    <!-- ============================================================== -->
   </div>
-  <!-- ============================================================== -->
-  <!-- End Wrapper -->
-  <!-- ============================================================== -->
-  <!-- ============================================================== -->
-  <!-- All Jquery -->
-  <!-- ============================================================== -->
   <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
-  <!-- Bootstrap tether Core JavaScript -->
   <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/app-style-switcher.js"></script>
   <script src="plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js"></script>
-  <!--Wave Effects -->
   <script src="js/waves.js"></script>
-  <!--Menu sidebar -->
   <script src="js/sidebarmenu.js"></script>
-  <!--Custom JavaScript -->
   <script src="js/custom.js"></script>
-  <!--This page JavaScript -->
-  <!--chartis chart-->
   <script src="plugins/bower_components/chartist/dist/chartist.min.js"></script>
   <script src="plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-  <script src="js/pages/dashboards/dashboard1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('foodChoicesChart').getContext('2d');
+        var foodChoicesChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: <?php echo json_encode(array_column($categoryData, 'name')); ?>,
+                datasets: [{
+                    data: <?php echo json_encode(array_column($categoryData, 'count')); ?>,
+                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
+                    hoverBackgroundColor: ['#ff6384', '#36a2eb', '#cc65fe']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+    });
+  </script>
 </body>
-
 </html>
+
