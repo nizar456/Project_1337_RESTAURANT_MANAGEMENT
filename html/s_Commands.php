@@ -1,10 +1,18 @@
 <?php
-session_start();
-if (!isset($_SESSION['loggedin'])) {
-    header("Location: logout.php");
-    exit();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 require_once 'db_connection.php';
+
+// Check if the user is logged in and is a student
+if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin'] || $_SESSION['role'] !== 'student') {
+    header("Location: login.php");
+    exit();
+}
+
+// Retrieve the student ID from the session and provide a default if not set
+$etudiantId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '';
+
 
 // Prevent caching
 header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
@@ -45,7 +53,6 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -234,6 +241,8 @@ if ($result->num_rows > 0) {
         .dropdown {
             position: relative;
             display: inline-block;
+            border: none;
+            border-radius: 0.5rem;
         }
 
         .dropdown-content {
@@ -261,6 +270,19 @@ if ($result->num_rows > 0) {
         .dropdown:hover .dropbtn {
             background-color: #3e8e41;
         }
+        .table {
+            margin-top: 25px;
+
+        }
+        input[type=number] {
+            width: 250px;
+            padding: 10px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border-radius: 0.5rem;
+            border: none;
+            margin-left: 40px;
+            }
     </style>
 </head>
 
@@ -337,6 +359,12 @@ if ($result->num_rows > 0) {
             </div>
         </div>
         <div class="content">
+            <div class="table">
+                    <h2 class="category-title">Choose your table number</h2>
+                    <label for="tableNum">
+                        <input type="number" id="tableNum" class="number-input" min="1" max="50" placeholder="Table Number" />
+                    </label>
+            </div>
             <div class="container-fluid" id="cont">
                 <div class="title" id="title">Time Remaining to order your Lunch</div>
                 <div class="countdown" id="countdown"></div>
@@ -344,36 +372,39 @@ if ($result->num_rows > 0) {
             <form id="menuForm" method="POST" action="save_command.php">
                 <input type="hidden" id="selectedProducts" name="selectedProducts" value="">
                 <input type="hidden" id="tableNum" name="tableNum" value="">
-                <input type="hidden" id="etudiantId" name="etudiantId" value=""> <!-- Assuming you have user_id in the session -->
+                <input type="hidden" id="etudiantId" name="etudiantId" value="<?php echo htmlspecialchars((string)$etudiantId); ?>">
                 <div id="menu">
                     <div id="products">
                         <?php if (!empty($menuByCategory)): ?>
-                            <?php foreach ($menuByCategory as $categoryId => $categoryData): ?>
-                                <h2 class="category-title" data-category-id="<?php echo htmlspecialchars($categoryId); ?>">
-                                    <?php echo htmlspecialchars($categoryData['name']); ?>
-                                </h2>
-                                <div class="row mx-0">
-                                    <?php foreach ($categoryData['products'] as $product): ?>
-                                        <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
-                                            <div class="card d-flex flex-column align-items-center" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
-                                                <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
-                                                <div class="card-img">
-                                                    <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                            <!-- Inside the loop where you're generating cards for each product -->
+                                <?php foreach ($menuByCategory as $categoryId => $categoryData): ?>
+                                    <h2 class="category-title" data-category-id="<?php echo htmlspecialchars($categoryId); ?>">
+                                        <?php echo htmlspecialchars($categoryData['name']); ?>
+                                    </h2>
+                                    <div class="row mx-0">
+                                        <?php foreach ($categoryData['products'] as $product): ?>
+                                            <div class="col-lg-4 col-md-6 pt-md-4 pt-3">
+                                                <div class="card d-flex flex-column align-items-center" 
+                                                    data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>"
+                                                    data-category="<?php echo htmlspecialchars($categoryId); ?>"> <!-- Add data-category -->
+                                                    <div class="product-name text-center"><?php echo htmlspecialchars($product['product_name']); ?></div>
+                                                    <div class="card-img">
+                                                        <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
+                                                    </div>
+                                                    <!-- Add dropdown menu only for specific categories -->
+                                                    <?php if ($categoryId == 3 || $categoryId == 4): ?>
+                                                        <select class="quantity-input mt-2" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
+                                                            <option value="">Select Quantity</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
+                                                    <?php endif; ?>
                                                 </div>
-                                                <!-- Add dropdown menu only for specific categories -->
-                                                <?php if ($categoryId == 3 || $categoryId == 4): ?>
-                                                    <select class="dropdown mt-2" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
-                                                        <option value="">Select Quantity</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                    </select>
-                                                <?php endif; ?>
                                             </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endforeach; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endforeach; ?>
                         <?php else: ?>
                             <p>No menu items found for today.</p>
                         <?php endif; ?>
@@ -465,114 +496,132 @@ if ($result->num_rows > 0) {
         setInterval(updateCountdown, 1000);
     
     </script>
-    <script>
-        $(document).ready(function() {
-    let selectedProductsByCategory = {};
+    
+   <script>
+   $(document).ready(function() {
+        // Object to store selected products by category
+        let selectedProductsByCategory = {};
 
-    $(".card").on("click", function() {
-        $(this).toggleClass("selected");
-
-        const productId = $(this).data("product-id");
-        const productName = $(this).find('.product-name').text().trim();
-        const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
-        const categoryName = $(this).closest('.row').prev('.category-title').text().trim();
-
-        if ($(this).hasClass("selected")) {
-            if (!selectedProductsByCategory[categoryId]) {
-                selectedProductsByCategory[categoryId] = {
-                    name: categoryName,
-                    products: {}
-                };
-            }
-            selectedProductsByCategory[categoryId].products[productId] = {
-                name: productName,
-                quantity: 1
-            };
-        } else {
-            delete selectedProductsByCategory[categoryId].products[productId];
-            if (Object.keys(selectedProductsByCategory[categoryId].products).length === 0) {
-                delete selectedProductsByCategory[categoryId];
-            }
-        }
-    });
-
-    $(".dropdown").on("change", function() {
-        const productId = $(this).data("product-id");
-        const quantity = $(this).val();
-        const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
-
-        if (selectedProductsByCategory[categoryId] && selectedProductsByCategory[categoryId].products[productId]) {
-            selectedProductsByCategory[categoryId].products[productId].quantity = parseInt(quantity, 10);
-        }
-    });
-
-    $("#menuForm").on("submit", function(event) {
-        event.preventDefault();
-
-        let selectedProducts = [];
-        $(".card.selected").each(function() {
+        // Listen for click events on the product cards
+        $(".card").on("click", function() {
             const productId = $(this).data("product-id");
             const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
-            const quantity = $(this).find('.dropdown').val() || 1;
+            const categoryName = $(this).closest('.row').prev('.category-title').text().trim();
+            const productName = $(this).find('.product-name').text().trim();
+            const quantity = $(this).find('.quantity-input').val() ? $(this).find('.quantity-input').val() : 1;
 
-            selectedProducts.push({
-                productId: productId,
-                quantity: parseInt(quantity, 10)
+            // Debugging: Log details
+            console.log(`Product: ${productName}, Quantity: ${quantity}`);
+
+            // Check if another product is already selected in the same category
+
+            if (categoryId === 1 || categoryId === 2) {
+            if (selectedProductsByCategory[categoryId] && selectedProductsByCategory[categoryId].productId !== productId) {
+                // Remove 'selected' class from the previously selected product
+                $(".card[data-product-id='" + selectedProductsByCategory[categoryId].productId + "']").removeClass("selected");
+            }
+            }
+            // Toggle the selected state
+            $(this).toggleClass("selected");
+
+            if ($(this).hasClass("selected")) {
+                // Add product to selected category with quantity
+                selectedProductsByCategory[categoryId] = {
+                    name: categoryName,
+                    productId: productId,
+                    products: [{
+                        name: productName,
+                        quantity: quantity
+                    }]
+                };
+            } else {
+                // Remove product from selected category
+                delete selectedProductsByCategory[categoryId];
+            }
+
+            // Update the hidden input field with the selected products
+            $("#selectedProducts").val(JSON.stringify(selectedProductsByCategory));
+        });
+
+        // Function to handle form submission
+        $("#menuForm").on("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Collect selected product IDs and quantities
+            let selectedProducts = [];
+            for (let categoryId in selectedProductsByCategory) {
+                const category = selectedProductsByCategory[categoryId];
+                category.products.forEach(function(product) {
+                    selectedProducts.push({
+                        productId: category.productId,
+                        productName: product.name,
+                        quantity: product.quantity
+                    });
+                });
+            }
+
+            // Retrieve the table number and etudiantId
+            let tableNum = $("#tableNum").val();
+            let etudiantId = $("#etudiantId").val();
+
+            // Check if both principal and secondary products are selected
+            const principalSelected = selectedProductsByCategory[1]; // Assuming 1 is the category ID for principal
+            const secondarySelected = selectedProductsByCategory[2]; // Assuming 2 is the category ID for secondary
+
+            if (!principalSelected || !secondarySelected) {
+                alert("Please select one product from each category.");
+                return;
+            }
+
+            // Debugging: Log the selected product details
+            console.log("Selected Products:", selectedProducts);
+
+            // Send data via AJAX
+            $.ajax({
+                type: "POST",
+                url: "save_command.php",
+                data: {
+                    selectedProducts: JSON.stringify(selectedProducts), // Convert to JSON string
+                    tableNum: tableNum,
+                    etudiantId: etudiantId
+                },
+                success: function(response) {
+                    // Show categorized popup with selected products
+                    let popupContent = $("#popup ul");
+                    popupContent.empty();
+
+                    if (Object.keys(selectedProductsByCategory).length > 0) {
+                        // Iterate over each category
+                        for (let categoryId in selectedProductsByCategory) {
+                            const category = selectedProductsByCategory[categoryId];
+                            popupContent.append(`<li><strong>${category.name}:</strong></li>`);
+                            // List all selected products with quantities under this category
+                            category.products.forEach(function(product) {
+                                popupContent.append(`<li> - ${product.name} (Qty: ${product.quantity})</li>`);
+                            });
+                        }
+                    } else {
+                        popupContent.append(`<li>No products selected.</li>`);
+                    }
+                    $("#popup").show();
+                    $("#overlay").show();
+                },
+                error: function() {
+                    alert('An error occurred.');
+                }
             });
         });
 
-        let tableNum = $("#tableNum").val();
-        let etudiantId = $("#etudiantId").val();
-
-        $("#selectedProducts").val(JSON.stringify(selectedProducts));
-
-        console.log('Selected Products:', selectedProducts); // Debugging
-
-        $.ajax({
-            type: "POST",
-            url: "save_command.php",
-            data: {
-                selectedProducts: JSON.stringify(selectedProducts),
-                tableNum: tableNum,
-                etudiantId: etudiantId
-            },
-            success: function(response) {
-                console.log('Server Response:', response); // Debugging
-
-                let popupContent = $("#popup ul");
-                popupContent.empty();
-
-                if (Object.keys(selectedProductsByCategory).length > 0) {
-                    for (let categoryId in selectedProductsByCategory) {
-                        const category = selectedProductsByCategory[categoryId];
-                        popupContent.append(`<li><strong>${category.name}:</strong></li>`);
-                        for (let productId in category.products) {
-                            const product = category.products[productId];
-                            popupContent.append(`<li> - ${product.name} (Quantity: ${product.quantity})</li>`);
-                        }
-                    }
-                } else {
-                    popupContent.append(`<li>No products selected.</li>`);
-                }
-                $("#popup").show();
-                $("#overlay").show();
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error); // Debugging
-                alert('An error occurred.');
-            }
+        // Function to close the popup
+        $(".close").on("click", function() {
+            closePopup();
         });
-    });
 
-    $(".close").on("click", function() {
-        closePopup();
+        function closePopup() {
+            $("#popup").hide();
+            $("#overlay").hide();
+        }
     });
-
-    function closePopup() {
-        $("#popup").hide();
-        $("#overlay").hide();
-    }
-});
 
 
     </script>

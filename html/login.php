@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
         $_SESSION['loggedin'] = true;
-        $_SESSION['user_name'] = $row['nom'];//stock the name in the ss
+        $_SESSION['user_name'] = $row['nom'];
+        $_SESSION['user_id'] = $row['id']; // Ensure user_id is set in the session
         $_SESSION['role'] = 'student';
         header("Location: s_TodayMenu.php");
         exit();
