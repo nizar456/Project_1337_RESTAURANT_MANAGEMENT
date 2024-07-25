@@ -318,7 +318,6 @@ if ($result->num_rows > 0) {
                         <p>No products found.</p>
                     <?php endif; ?>
                 </div>
-
                     <div class="container-btn">
                         <button type="submit" class="button">Validate</button>
                     </div>

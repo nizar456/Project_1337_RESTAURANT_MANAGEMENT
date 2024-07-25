@@ -170,86 +170,181 @@ if ($result->num_rows > 0) {
             font-family: "Nunito", sans-serif;
             font-size: 14px;
         }
+        #menu{
+            margin-right: 20px;
+        }
+        .button {
+            background-color: #2f323e; 
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            font-size: 16px;
+            margin: 0; /* Add margin to space it from other elements */
+            float: right; /* Align the button to the right */
+            border-radius: 0.5rem;
+        }
+        .container-btn {
+            padding: 0 10px 70px 0;
+            margin:0 ;
+        }
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        #popup h2 {
+            margin-top: 5px;
+        }
+        #popup ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 5px;
+        }
+        #popup ul li {
+            margin: 5px 0;
+            font-size: 17px;
+        }
+        #popup .close {
+            cursor: pointer;
+            color: #2f323e;
+            float: right;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #f1f1f1}
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
     </style>
 </head>
 
 <body>
-    <div class="preloader">
-        <div class="lds-ripple">
-            <div class="lds-pos"></div>
-            <div class="lds-pos"></div>
-        </div>
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
     </div>
-    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
-        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
-        <header class="topbar" data-navbarbg="skin5">
-            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
-                <div class="navbar-header" data-logobg="skin6">
-                    <a class="navbar-brand" href="index.php">
-                        <b class="logo-icon">
-                            <img src="plugins/images/logo-icon.png" alt="homepage" />
-                        </b>
-                        <span class="logo-text">
-                            <img src="plugins/images/logo-text.png" alt="homepage" />
-                        </span>
-                    </a>
-                    <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none"
-                        href="javascript:void(0)"><i class="ti-menu ti-close"></i></a>
-                </div>
-                <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-                    <ul class="navbar-nav ms-auto d-flex align-items-center">
-                        <li>
-                            <span class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                        </li>
-                    </ul>
-                </div>
+</div>
+<div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+    data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+    <header class="topbar" data-navbarbg="skin5">
+        <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+            <div class="navbar-header" data-logobg="skin6">
+                <a class="navbar-brand" href="index.php">
+                    <b class="logo-icon">
+                        <img src="plugins/images/logo-icon.png" alt="homepage" />
+                    </b>
+                    <span class="logo-text">
+                        <img src="plugins/images/logo-text.png" alt="homepage" />
+                    </span>
+                </a>
+                <a class="nav-toggler waves-effect waves-light text-dark d-block d-md-none"
+                    href="javascript:void(0)"><i class="ti-menu ti-close"></i></a>
+            </div>
+            <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
+                <ul class="navbar-nav ms-auto d-flex align-items-center">
+                    <li>
+                        <span class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <aside class="left-sidebar" data-sidebarbg="skin6">
+        <div class="scroll-sidebar">
+            <!-- Sidebar navigation-->
+            <nav class="sidebar-nav">
+                <ul id="sidebarnav">
+                    <!-- User Profile-->
+                    <li class="sidebar-item">
+                        <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_TodayMenu.php"
+                            aria-expanded="false">
+                            <i class="fa fa-columns" aria-hidden="true"></i>
+                            <span class="hide-menu">Today Menu</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_Commands.php"
+                            aria-expanded="false">
+                            <i class="fa fa-table" aria-hidden="true"></i>
+                            <span class="hide-menu">Command your food</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logoutss.php"
+                            aria-expanded="false">
+                            <i class="fas fa-arrow-alt-circle-right" aria-hidden="true"></i>
+                            <span class="hide-menu">Logout</span>
+                        </a>
+                    </li>
+                </ul>
             </nav>
-        </header>
-        <aside class="left-sidebar" data-sidebarbg="skin6">
-            <div class="scroll-sidebar">
-                <!-- Sidebar navigation-->
-                <nav class="sidebar-nav">
-                    <ul id="sidebarnav">
-                        <!-- User Profile-->
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_TodayMenu.php"
-                                aria-expanded="false">
-                                <i class="fa fa-columns" aria-hidden="true"></i>
-                                <span class="hide-menu">Today Menu</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="s_Commands.php"
-                                aria-expanded="false">
-                                <i class="fa fa-table" aria-hidden="true"></i>
-                                <span class="hide-menu">Command your food</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="Logoutss.php"
-                                aria-expanded="false">
-                                <i class="fas fa-arrow-alt-circle-right" aria-hidden="true"></i>
-                                <span class="hide-menu">Logout</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- End Sidebar navigation -->
-            </div>
-        </aside>
-        <div class="page-wrapper">
-            <div class="page-breadcrumb bg-white">
-                <div class="row align-items-center">
-                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">Command your food</h4>
-                    </div>
+            <!-- End Sidebar navigation -->
+        </div>
+    </aside>
+    <div class="page-wrapper">
+        <div class="page-breadcrumb bg-white">
+            <div class="row align-items-center">
+                <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                    <h4 class="page-title">Command your food</h4>
                 </div>
             </div>
-            <div class="content">
-                <div class="container-fluid" id="cont">
-                    <div class="title" id="title">Time Remaining to order your Lunch</div>
-                    <div class="countdown" id="countdown"></div>
-                </div>
+        </div>
+        <div class="content">
+            <div class="container-fluid" id="cont">
+                <div class="title" id="title">Time Remaining to order your Lunch</div>
+                <div class="countdown" id="countdown"></div>
+            </div>
+            <form id="menuForm" method="POST" action="save_command.php">
+                <input type="hidden" id="selectedProducts" name="selectedProducts" value="">
+                <input type="hidden" id="tableNum" name="tableNum" value="">
+                <input type="hidden" id="etudiantId" name="etudiantId" value=""> <!-- Assuming you have user_id in the session -->
                 <div id="menu">
                     <div id="products">
                         <?php if (!empty($menuByCategory)): ?>
@@ -265,6 +360,15 @@ if ($result->num_rows > 0) {
                                                 <div class="card-img">
                                                     <img src="<?php echo htmlspecialchars($product['product_url']); ?>" alt=""/>
                                                 </div>
+                                                <!-- Add dropdown menu only for specific categories -->
+                                                <?php if ($categoryId == 3 || $categoryId == 4): ?>
+                                                    <select class="dropdown mt-2" data-product-id="<?php echo htmlspecialchars($product['product_id']); ?>">
+                                                        <option value="">Select Quantity</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -274,14 +378,31 @@ if ($result->num_rows > 0) {
                             <p>No menu items found for today.</p>
                         <?php endif; ?>
                     </div>
-                </div>    
-            </div>
-
-            <footer class="footer text-center">
-                2024 © 1337 Restaurant
-            </footer>
+                    <div class="container-btn">
+                        <button type="submit" class="button">Confirm</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        
+
+        <footer class="footer text-center">
+            2024 © 1337 Restaurant
+        </footer>
+        <div id="overlay"></div>
+        <div id="popup">
+            <span class="close" onclick="closePopup()">×</span>
+            <h2>Selected Products</h2>
+            <ul>
+                <?php if (!empty($products)): ?>
+                    <?php foreach ($products as $product): ?>
+                        <li><?php echo htmlspecialchars($product['product_name']) . ' (' . htmlspecialchars($product['category_name']) . ')'; ?></li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>No products selected.</li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
     <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app-style-switcher.js"></script>
@@ -303,14 +424,14 @@ if ($result->num_rows > 0) {
                 targetMinute = 0;
                 targetSecond = 0;
                 titleText = "Time Remaining to order your Lunch";
-            } else if (hours >= 7 && hours < 15) {
+            } else if (hours >= 7 && hours < 17) {
                 // Between 12:00 and 15:00
                 document.getElementById('title').style.display = "none";
                 document.getElementById('countdown').style.display = "none";
                 document.getElementById('cont').style.display = "none";
-                document.getElementById('menu').style.display = "block"; // Show the menu
+                document.getElementById('menuForm').style.display = "block"; // Show the menu
                 return;
-            } else if (hours >= 15) {
+            } else if (hours >= 17) {
                 // Countdown to 12:00 the next day
                 targetHour = 12 + 24; // 12:00 the next day
                 targetMinute = 0;
@@ -318,7 +439,7 @@ if ($result->num_rows > 0) {
                 titleText = "Time Remaining to order your Lunch";
                 document.getElementById('title').style.display = "block";
                 document.getElementById('countdown').style.display = "block";
-                document.getElementById('menu').style.display = "none"; // Hide the menu
+                document.getElementById('menuForm').style.display = "none"; // Hide the menu
             }
 
             const targetTime = new Date();
@@ -329,7 +450,7 @@ if ($result->num_rows > 0) {
             if (remainingTime <= 0) {
                 document.getElementById('title').style.display = "none";
                 document.getElementById('countdown').style.display = "none";
-                document.getElementById('menu').style.display = "block";
+                document.getElementById('menuForm').style.display = "block";
                 return;
             }
 
@@ -343,6 +464,117 @@ if ($result->num_rows > 0) {
 
         setInterval(updateCountdown, 1000);
     
+    </script>
+    <script>
+        $(document).ready(function() {
+    let selectedProductsByCategory = {};
+
+    $(".card").on("click", function() {
+        $(this).toggleClass("selected");
+
+        const productId = $(this).data("product-id");
+        const productName = $(this).find('.product-name').text().trim();
+        const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
+        const categoryName = $(this).closest('.row').prev('.category-title').text().trim();
+
+        if ($(this).hasClass("selected")) {
+            if (!selectedProductsByCategory[categoryId]) {
+                selectedProductsByCategory[categoryId] = {
+                    name: categoryName,
+                    products: {}
+                };
+            }
+            selectedProductsByCategory[categoryId].products[productId] = {
+                name: productName,
+                quantity: 1
+            };
+        } else {
+            delete selectedProductsByCategory[categoryId].products[productId];
+            if (Object.keys(selectedProductsByCategory[categoryId].products).length === 0) {
+                delete selectedProductsByCategory[categoryId];
+            }
+        }
+    });
+
+    $(".dropdown").on("change", function() {
+        const productId = $(this).data("product-id");
+        const quantity = $(this).val();
+        const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
+
+        if (selectedProductsByCategory[categoryId] && selectedProductsByCategory[categoryId].products[productId]) {
+            selectedProductsByCategory[categoryId].products[productId].quantity = parseInt(quantity, 10);
+        }
+    });
+
+    $("#menuForm").on("submit", function(event) {
+        event.preventDefault();
+
+        let selectedProducts = [];
+        $(".card.selected").each(function() {
+            const productId = $(this).data("product-id");
+            const categoryId = $(this).closest('.row').prev('.category-title').data("category-id");
+            const quantity = $(this).find('.dropdown').val() || 1;
+
+            selectedProducts.push({
+                productId: productId,
+                quantity: parseInt(quantity, 10)
+            });
+        });
+
+        let tableNum = $("#tableNum").val();
+        let etudiantId = $("#etudiantId").val();
+
+        $("#selectedProducts").val(JSON.stringify(selectedProducts));
+
+        console.log('Selected Products:', selectedProducts); // Debugging
+
+        $.ajax({
+            type: "POST",
+            url: "save_command.php",
+            data: {
+                selectedProducts: JSON.stringify(selectedProducts),
+                tableNum: tableNum,
+                etudiantId: etudiantId
+            },
+            success: function(response) {
+                console.log('Server Response:', response); // Debugging
+
+                let popupContent = $("#popup ul");
+                popupContent.empty();
+
+                if (Object.keys(selectedProductsByCategory).length > 0) {
+                    for (let categoryId in selectedProductsByCategory) {
+                        const category = selectedProductsByCategory[categoryId];
+                        popupContent.append(`<li><strong>${category.name}:</strong></li>`);
+                        for (let productId in category.products) {
+                            const product = category.products[productId];
+                            popupContent.append(`<li> - ${product.name} (Quantity: ${product.quantity})</li>`);
+                        }
+                    }
+                } else {
+                    popupContent.append(`<li>No products selected.</li>`);
+                }
+                $("#popup").show();
+                $("#overlay").show();
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error); // Debugging
+                alert('An error occurred.');
+            }
+        });
+    });
+
+    $(".close").on("click", function() {
+        closePopup();
+    });
+
+    function closePopup() {
+        $("#popup").hide();
+        $("#overlay").hide();
+    }
+});
+
+
     </script>
 </body>
 
