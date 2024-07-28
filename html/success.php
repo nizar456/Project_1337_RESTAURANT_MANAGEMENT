@@ -1,25 +1,15 @@
 <?php
 include 'db_connection.php';
-
-// Check if 'selectedProducts' is set
 if (isset($_POST['selectedProducts'])) {
     $selectedProducts = $_POST['selectedProducts'];
-
-    // Convert comma-separated list into an array
     $productIds = explode(',', $selectedProducts);
-    
-    // Prepare placeholders for the SQL query
     $placeholders = implode(',', array_fill(0, count($productIds), '?'));
-
-    // Query to get product names and categories
     $sql = "SELECT p.nom AS product_name, c.nom AS category_name 
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             WHERE p.id IN ($placeholders)";
     $stmt = $conn->prepare($sql);
     $stmt->execute($productIds);
-    
-    // Fetch the results
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
     $products = [];
@@ -32,7 +22,6 @@ if (isset($_POST['selectedProducts'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Success</title>
     <style>
-        /* Popup CSS */
         #popup {
             display: none;
             position: fixed;
@@ -74,7 +63,6 @@ if (isset($_POST['selectedProducts'])) {
     </style>
 </head>
 <body>
-    <!-- Popup HTML -->
     <div id="overlay"></div>
     <div id="popup">
         <span class="close" onclick="closePopup()">×</span>
@@ -89,20 +77,15 @@ if (isset($_POST['selectedProducts'])) {
             <?php endif; ?>
         </ul>
     </div>
-
-    <!-- JavaScript to control the popup -->
     <script>
         function showPopup() {
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('popup').style.display = 'block';
         }
-
         function closePopup() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('popup').style.display = 'none';
         }
-
-        // Show the popup automatically if the data is present
         document.addEventListener('DOMContentLoaded', function() {
             <?php if (!empty($products)): ?>
                 showPopup();

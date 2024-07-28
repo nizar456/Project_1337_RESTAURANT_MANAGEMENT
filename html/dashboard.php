@@ -7,6 +7,30 @@ if (!isset($_SESSION['loggedin'])) {
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0"); 
+include 'db_connection.php';
+$studentsQuery = "SELECT COUNT(*) AS total_students FROM etudiant";
+$studentsResult = $conn->query($studentsQuery);
+$studentsRow = $studentsResult->fetch_assoc();
+$totalStudents = $studentsRow['total_students'];
+$todayDate = date('Y-m-d');
+$studentsAteQuery = "SELECT COUNT(DISTINCT command.etudiant_id) AS students_ate_today 
+                     FROM command 
+                     WHERE date = '$todayDate' AND done = 1";
+$studentsAteResult = $conn->query($studentsAteQuery);
+$studentsAteRow = $studentsAteResult->fetch_assoc();
+$studentsAteToday = $studentsAteRow['students_ate_today'];
+$categoryQuery = "SELECT products.nom, COUNT(contains.product_id) AS count 
+                  FROM contains 
+                  JOIN command ON contains.command_id = command.id 
+                  JOIN products ON contains.product_id = products.id 
+                  JOIN categories ON products.category_id = categories.id 
+                  WHERE command.date = '$todayDate' AND categories.nom = 'Principal Food' 
+                  GROUP BY products.nom";
+$categoryResult = $conn->query($categoryQuery);
+$categoryData = [];
+while ($row = $categoryResult->fetch_assoc()) {
+    $categoryData[] = ['name' => $row['nom'], 'count' => $row['count']];
+}
 ?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
@@ -18,33 +42,25 @@ header("Expires: 0");
     <title>1337 Restaurant</title>
     <link rel="canonical" href="https://www.wrappixel.com/templates/ample-admin-lite/" />
     <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
+    <link href="plugins/bower_components/chartist/dist/chartist.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css" />
     <link href="css/style.min.css" rel="stylesheet" />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
-      * {
-        padding: 0;
-        margin: 0;
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-        font-size: 16px;
-        font-weight: normal;
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            font-size: 16px;
+            font-weight: normal;
         }
-      .command-card {
-        border: 1px solid #ddd;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-      }
-      .command-card h5 {
-        margin-top: 0;
-      }
-      .container-fluid {
-        display: flex;
-        height: 100vh;
-        flex-direction: column;  
-      }
-  </style>
+        .container-fluid {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+         }
+    </style>
   </head>
   <body>
     <div class="preloader">
@@ -57,7 +73,7 @@ header("Expires: 0");
       <header class="topbar" data-navbarbg="skin5">
         <nav class="navbar top-navbar navbar-expand-md navbar-dark">
           <div class="navbar-header" data-logobg="skin6">
-            <a class="navbar-brand" href="dashboard.php">
+            <a class="navbar-brand" href="index.php">
               <b class="logo-icon">
                 <img src="plugins/images/logo-icon.png" alt="homepage" />
               </b>
@@ -72,7 +88,7 @@ header("Expires: 0");
               <li>
                 <span class="text-white font-medium">Bonjour <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
               </li>
-            </ul>
+              </ul>
           </div>
         </nav>
       </header>
@@ -81,7 +97,7 @@ header("Expires: 0");
           <nav class="sidebar-nav">
             <ul id="sidebarnav">
               <li class="sidebar-item pt-2">
-                <a class="sidebar-link waves-effect waves-dark sidebar-link" href="dashboard.php" aria-expanded="false">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
                   <i class="far fa-clock" aria-hidden="true"></i>
                   <span class="hide-menu">Dashboard</span>
                 </a>
@@ -118,55 +134,37 @@ header("Expires: 0");
         <div class="page-breadcrumb bg-white">
           <div class="row align-items-center">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-              <h4 class="page-title">Commands</h4>
+              <h4 class="page-title">Dashboard</h4>
             </div>
           </div>
         </div>
         <div class="container-fluid">
-          <?php
-          require_once 'db_connection.php';
-          $currentDate = date('Y-m-d');
-          $query = "SELECT c.id, c.date, c.table_num, c.etudiant_id, c.done, e.nom AS etudiant_name
-                    FROM command c
-                    JOIN etudiant e ON c.etudiant_id = e.id
-                    WHERE c.date = ? AND c.done = 0";
-          $stmt = $conn->prepare($query);
-          $stmt->bind_param('s', $currentDate);
-          $stmt->execute();
-          $result = $stmt->get_result();
-          if ($result->num_rows > 0) {
-              while ($row = $result->fetch_assoc()) {
-                  echo '<div class="command-card">';
-                  echo '<h5>Command ID: ' . $row['id'] . '</h5>';
-                  echo '<p>Date: ' . $row['date'] . '</p>';
-                  echo '<p>Table Number: ' . $row['table_num'] . '</p>';
-                  echo '<p>Student Name: ' . $row['etudiant_name'] . '</p>';
-                  $commandId = $row['id'];
-                  $productQuery = "SELECT p.nom AS product_name, c.quantity
-                                  FROM contains c
-                                  JOIN products p ON c.product_id = p.id
-                                  WHERE c.command_id = ?";
-                  $productStmt = $conn->prepare($productQuery);
-                  $productStmt->bind_param('i', $commandId);
-                  $productStmt->execute();
-                  $productResult = $productStmt->get_result();
-                  echo '<ul>';
-                  while ($productRow = $productResult->fetch_assoc()) {
-                      echo '<li>' . $productRow['product_name'] . ' - Quantity: ' . $productRow['quantity'] . '</li>';
-                  }
-                  echo '</ul>';
-                  echo '<form method="POST" action="validate_command.php">';
-                  echo '<input type="hidden" name="command_id" value="' . $row['id'] . '">';
-                  echo '<button type="submit" class="btn btn-success">Validate Command</button>';
-                  echo '</form>';
-                  echo '</div>';
-              }
-          } else {
-              echo '<h2>No commands for today.</h2>';
-          }
-          $stmt->close();
-          $conn->close();
-          ?>
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h5 class="card-title">Total Students</h5>
+                  <p class="card-text"><?php echo $totalStudents; ?></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h5 class="card-title">Students Ate Today</h5>
+                  <p class="card-text"><?php echo $studentsAteToday; ?></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h5 class="card-title">Principal Food Choices</h5>
+                  <canvas id="foodChoicesChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <footer class="footer text-center">
           2024 © 1337 Restaurant
@@ -176,8 +174,37 @@ header("Expires: 0");
     <script src="plugins/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app-style-switcher.js"></script>
+    <script src="plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js"></script>
     <script src="js/waves.js"></script>
     <script src="js/sidebarmenu.js"></script>
     <script src="js/custom.js"></script>
+    <script src="plugins/bower_components/chartist/dist/chartist.min.js"></script>
+    <script src="plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          var ctx = document.getElementById('foodChoicesChart').getContext('2d');
+          var foodChoicesChart = new Chart(ctx, {
+              type: 'pie',
+              data: {
+                  labels: <?php echo json_encode(array_column($categoryData, 'name')); ?>,
+                  datasets: [{
+                      data: <?php echo json_encode(array_column($categoryData, 'count')); ?>,
+                      backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
+                      hoverBackgroundColor: ['#ff6384', '#36a2eb', '#cc65fe']
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  plugins: {
+                      legend: {
+                          position: 'top',
+                      }
+                  }
+              }
+          });
+      });
+    </script>
   </body>
 </html>
+

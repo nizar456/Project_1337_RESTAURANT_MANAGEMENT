@@ -5,28 +5,18 @@ if (!isset($_SESSION['loggedin'])) {
     header("Location: logout.php");
     exit();
 }
-
-// Prevent caching
-header("Cache-Control: no-cache, must-revalidate"); // HTTP 1.1
-header("Pragma: no-cache"); // HTTP 1.0
-header("Expires: 0"); // Proxies
-
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 require_once 'db_connection.php';
-
-// Get today's date
 $today = date('Y-m-d');
-
-// Query to get today's menu ID
 $menuSql = "SELECT id FROM today_menu WHERE menu_date = '$today'";
 $menuResult = $conn->query($menuSql);
 $menuId = null;
-
 if ($menuResult->num_rows > 0) {
     $menuRow = $menuResult->fetch_assoc();
     $menuId = $menuRow['id'];
 }
-
-// If today's menu exists, get the products in it
 $productsByCategory = [];
 if ($menuId !== null) {
     $sql = "
@@ -43,23 +33,22 @@ if ($menuId !== null) {
         ORDER BY c.id, p.nom
     ";
     $result = $conn->query($sql);
-
-    // Organize products by category
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $categoryId = $row['category_id'];
-            $categoryName = $row['category_name'];
-            if (!isset($productsByCategory[$categoryId])) {
-                $productsByCategory[$categoryId] = [
-                    'name' => $categoryName,
-                    'products' => []
-                ];
-            }
-            $productsByCategory[$categoryId]['products'][] = $row;
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $categoryId = $row['category_id'];
+        $categoryName = $row['category_name'];
+        if (!isset($productsByCategory[$categoryId])) {
+            $productsByCategory[$categoryId] = [
+            'name' => $categoryName,
+            'products' => []
+            ];
         }
+    $productsByCategory[$categoryId]['products'][] = $row;
+    }
     }
 }
 ?>
+
 <html dir="ltr" lang="en">
 <head>
     <meta charset="utf-8" />
@@ -73,6 +62,15 @@ if ($menuId !== null) {
     <link rel="icon" type="image/png" sizes="16x16" href="plugins/images/favicon.png" />
     <link href="css/style.min.css" rel="stylesheet" />
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+        }
         .category-title {
             margin-top: 20px;
             font-size: 1.5em;
