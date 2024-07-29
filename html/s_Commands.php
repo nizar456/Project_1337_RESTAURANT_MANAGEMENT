@@ -318,7 +318,7 @@ $menuByCategory = fetchTodayMenu($conn);
             <header class="topbar" data-navbarbg="skin5">
                 <nav class="navbar top-navbar navbar-expand-md navbar-dark">
                     <div class="navbar-header" data-logobg="skin6">
-                        <a class="navbar-brand" href="index.php">
+                        <a class="navbar-brand" href="s_TodayMenu.php">
                             <b class="logo-icon">
                                 <img src="plugins/images/logo-icon.png" alt="homepage" />
                             </b>

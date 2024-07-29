@@ -53,7 +53,7 @@ header("Expires: 0");
       <header class="topbar" data-navbarbg="skin5">
         <nav class="navbar top-navbar navbar-expand-md navbar-dark">
           <div class="navbar-header" data-logobg="skin6">
-            <a class="navbar-brand" href="dashboard.html">
+            <a class="navbar-brand" href="dashboard.php">
               <b class="logo-icon">
                 <img src="plugins/images/logo-icon.png" alt="homepage" />
               </b>

@@ -101,6 +101,11 @@ if ($result->num_rows > 0) {
             padding: 10px;
             background-color: #f8f8f8;
         }
+        .container-fluid {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;  
+      }
     </style>
 </head>
 <body>
@@ -108,7 +113,7 @@ if ($result->num_rows > 0) {
         <header class="topbar" data-navbarbg="skin5">
             <nav class="navbar top-navbar navbar-expand-md navbar-dark">
                 <div class="navbar-header" data-logobg="skin6">
-                    <a class="navbar-brand" href="index.html">
+                    <a class="navbar-brand" href="s_TodayMenu.php">
                         <b class="logo-icon"><img src="plugins/images/logo-icon.png" alt="homepage" /></b>
                         <span class="logo-text"><img src="plugins/images/logo-text.png" alt="homepage" /></span>
                     </a>
@@ -172,7 +177,7 @@ if ($result->num_rows > 0) {
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p>No products found for today's menu.</p>
+                        <h2>No products found for today's menu.</h2>
                     <?php endif; ?>
                 </div>
             </div>

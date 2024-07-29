@@ -73,7 +73,7 @@ while ($row = $categoryResult->fetch_assoc()) {
       <header class="topbar" data-navbarbg="skin5">
         <nav class="navbar top-navbar navbar-expand-md navbar-dark">
           <div class="navbar-header" data-logobg="skin6">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="dashboard.php">
               <b class="logo-icon">
                 <img src="plugins/images/logo-icon.png" alt="homepage" />
               </b>
@@ -97,7 +97,7 @@ while ($row = $categoryResult->fetch_assoc()) {
           <nav class="sidebar-nav">
             <ul id="sidebarnav">
               <li class="sidebar-item pt-2">
-                <a class="sidebar-link waves-effect waves-dark sidebar-link" href="index.php" aria-expanded="false">
+                <a class="sidebar-link waves-effect waves-dark sidebar-link" href="dashboard.php" aria-expanded="false">
                   <i class="far fa-clock" aria-hidden="true"></i>
                   <span class="hide-menu">Dashboard</span>
                 </a>
