@@ -55,3 +55,63 @@ Cette section permet d'analyser les tendances alimentaires des étudiants. Elle 
 <img src="images\dashbord.png">
 
 
+<h2>Today Menu </h2>
+<p>La page TodayMenu est une interface dédiée aux administrateurs pour sélectionner et gérer les repas disponibles pour les étudiants chaque jour. Cette page permet de configurer les différentes options de repas que les étudiants peuvent choisir, en assurant une variété et une bonne planification des ressources alimentaires.
+Les principales fonctionnalités et processus de la page TodayMenu sont les suivantes :
+<br>
+
+<ul><li><strong>Sélection des Repas Principaux :</strong><br>L'administrateur commence par choisir les options de repas principaux disponibles pour la journée. Ces repas principaux sont les plats principaux que les étudiants peuvent sélectionner comme base de leur repas.
+
+<li><strong>Choix des Repas Secondaires :</strong><br>
+Après avoir sélectionné les repas principaux, l'administrateur choisit les repas secondaires. Ces repas secondaires complètent les repas principaux et offrent des options supplémentaires pour varier l'alimentation des étudiants.
+<li><strong>Sélection des Fruits et Yaourts :</strong><br>
+En plus des repas principaux et secondaires, l'administrateur sélectionne également les fruits et les yaourts disponibles pour la journée. Ces options saines et légères sont importantes pour offrir un choix équilibré aux étudiants.
+<li><strong>Confirmation et Sauvegarde :</strong><br>
+Une fois les sélections faites, l'administrateur confirme et sauvegarde le menu du jour. Ce menu sera ensuite visible pour les étudiants, qui pourront faire leur choix parmi les options disponibles.</ul></p>
+<img src="images\today_men.png">
+
+<h2>Commands  </h2>
+<p>La page des Commandes est une interface essentielle pour les administrateurs, permettant de gérer et de suivre toutes les commandes effectuées par les étudiants. Cette page offre une vue d'ensemble de toutes les commandes passées, permettant à l'administrateur de confirmer les commandes et de s'assurer que les repas sont correctement préparés et distribués.
+Les principales fonctionnalités et processus de la page des Commandes sont les suivantes :
+
+<br>
+
+<ul><li><strong>Visualisation des Commandes :</strong><br>L'administrateur peut voir la liste de toutes les commandes effectuées par les étudiants. Cette liste inclut des détails comme le nom de l'étudiant, les plats commandés, la quantité, et l'heure de la commande.
+
+<li><strong>Détails des Commandes :</strong><br>
+Chaque commande peut être sélectionnée pour voir plus de détails. Ces détails incluent la composition exacte de la commande (plats principaux, secondaires, etc.), ainsi que toute note spéciale ajoutée par l'étudiant.
+<li><strong>Confirmation des Commandes :</strong><br>
+L'une des fonctions clés de cette page est la possibilité pour l'administrateur de confirmer les commandes. Une fois qu'une commande est prête, l'administrateur peut la marquer comme confirmée, indiquant ainsi que la commande est prête à être récupérée par l'étudiant.<br></li></ul>
+
+<img src="images\commands.png">
+
+<h2>Add products  </h2>
+<p>a page AdProducts est conçue pour permettre aux administrateurs de gérer efficacement le catalogue de produits disponibles pour les étudiants. Cette page offre une interface intuitive pour ajouter de nouveaux produits, en fournissant les informations nécessaires telles que le nom, l'image et la catégorie du produit.
+Les principales fonctionnalités et processus de la page AdProducts sont les suivantes :
+
+<br>
+
+<ul><li><strong>Ajout de Produits :</strong><br>L'administrateur peut ajouter de nouveaux produits en remplissant un formulaire simple. Ce formulaire comprend plusieurs champs obligatoires :
+Nom du produit : Le nom du produit tel qu'il apparaîtra dans le catalogue.
+Image du produit : L'administrateur peut télécharger une image du produit pour aider les étudiants à visualiser ce qu'ils commandent.
+Catégorie du produit : Une liste déroulante permet à l'administrateur de sélectionner la catégorie à laquelle le produit appartient (par exemple, plat principal, dessert, boisson, etc.).
+
+<li><strong>Sélection de la Catégorie :</strong><br>
+Les produits peuvent être classés en différentes catégories, facilitant ainsi  la sélection pour les étudiants. L'administrateur peut choisir la catégorie appropriée pour chaque produit, ce qui aide à organiser le catalogue de manière logique et intuitive.
+<li><strong>Validation et Soumission :</strong><br>
+Une fois que tous les champs nécessaires sont remplis, l'administrateur peut soumettre le formulaire pour ajouter le nouveau produit au catalogue. Un message de confirmation indique que le produit a été ajouté avec succès.
+<br></li></ul>
+
+<img src="images\add.png">
+
+<h2>Command Your Food</h2>
+<p>La page Command Food permet aux étudiants de sélectionner les repas qu'ils souhaitent commander. Les étudiants peuvent choisir les principaux et secondaires aliments sans spécifier de quantité. Cependant, pour des catégories comme les fruits et les yaourts, ils ont la possibilité de sélectionner une quantité, par exemple, 1, 2 ou 3. Une fois leur sélection effectuée, les étudiants peuvent confirmer leur commande via cette page. Cette fonctionnalité offre une flexibilité accrue dans le choix des repas tout en facilitant le processus de commande pour les étudiants.
+
+<br>
+<img src="images\command.png">
+
+<h2>CONCLUSION</h2>
+<p>Ce système complet assure une gestion fluide et efficace des repas au sein de 1337 Coding School. Il permet aux administrateurs de gérer les menus et les commandes avec précision, et aux étudiants de sélectionner et commander leurs repas de manière simple et structurée. En offrant une interface claire et des fonctionnalités adaptées aux besoins des utilisateurs, ce système contribue à améliorer l'expérience de gestion des repas dans l'école.
+
+
+
